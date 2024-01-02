@@ -11,7 +11,8 @@
  *
  * The MDXEditor package re-exports Gurx's React hooks, so you can use them like this for example:
  * ```tsx
- * // use the markdown$ cell to get the current markdown value, and the rootEditor$ cell to get the Lexical editor instance.
+ * // use the markdown$ cell to get the current markdown value,
+ * // and the rootEditor$ cell to get the Lexical editor instance.
  * const [markdown, rootEditor] = useCellValues([markdown$, rootEditor$])
  * // use the applyBlockType$ signal to apply a block type to the current selection
  * const applyBlockType = usePublisher(applyBlockType$)

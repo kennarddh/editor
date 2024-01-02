@@ -27,7 +27,7 @@ export type RectData = Pick<DOMRect, 'height' | 'width' | 'top' | 'left'>
  * The state of the link dialog when it is inactive.
  * @group Link Dialog
  */
-export type InactiveLinkDialog = {
+export interface InactiveLinkDialog {
   type: 'inactive'
   rectangle?: undefined
   linkNodeKey?: undefined
@@ -37,7 +37,7 @@ export type InactiveLinkDialog = {
  * The state of the link dialog when it is in preview mode.
  * @group Link Dialog
  */
-export type PreviewLinkDialog = {
+export interface PreviewLinkDialog {
   type: 'preview'
   title: string
   url: string
@@ -49,7 +49,7 @@ export type PreviewLinkDialog = {
  * The state of the link dialog when it is in edit mode.
  * @group Link Dialog
  */
-export type EditLinkDialog = {
+export interface EditLinkDialog {
   type: 'edit'
   initialUrl: string
   initialTitle?: string

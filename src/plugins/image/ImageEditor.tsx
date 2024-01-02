@@ -1,6 +1,6 @@
 import React from 'react'
 
-import type { GridSelection, LexicalEditor, NodeSelection, RangeSelection } from 'lexical'
+import type { BaseSelection, GridSelection, LexicalEditor, NodeSelection, RangeSelection } from 'lexical'
 
 import { useLexicalComposerContext } from '@lexical/react/LexicalComposerContext.js'
 import { useLexicalNodeSelection } from '@lexical/react/useLexicalNodeSelection.js'
@@ -95,7 +95,7 @@ export function ImageEditor({ src, title, alt, nodeKey, width, height }: ImageEd
   const buttonRef = React.useRef<HTMLButtonElement | null>(null)
   const [isSelected, setSelected, clearSelection] = useLexicalNodeSelection(nodeKey)
   const [editor] = useLexicalComposerContext()
-  const [selection, setSelection] = React.useState<RangeSelection | NodeSelection | GridSelection | null>(null)
+  const [selection, setSelection] = React.useState<BaseSelection | null>(null)
   const activeEditorRef = React.useRef<LexicalEditor | null>(null)
   const [isResizing, setIsResizing] = React.useState<boolean>(false)
   const [imageSource, setImageSource] = React.useState<string | null>(null)
