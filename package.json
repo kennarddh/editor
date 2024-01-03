@@ -7,7 +7,9 @@
     "email": "petyo@virtuoso.dev"
   },
   "private": false,
-  "sideEffects": false,
+  "sideEffects": [
+    "*.css"
+  ],
   "type": "module",
   "version": "0.0.0-development",
   "description": "React component for rich text markdown editing",

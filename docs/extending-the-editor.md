@@ -82,23 +82,56 @@ export const DiffSourceToggleWrapper: React.FC<{ children: React.ReactNode }> = 
 
 ## Creating a custom plugin
 
-For simpler use cases, you might not need to explicitly declare a new plugin. If you declare a set of cells/signals and then use them in a React component, they will be automatically included into the Editor's realm. However, if you need to run some custom initialization logic or if you need to parameterize a certain behavior, the plugin format is the way to go. A common reason for a plugin might be the customization of the Markdown import/export behavior.
+For simpler use cases, you might not need to explicitly declare a new plugin. If you declare a set of cells/signals and then use them in a React component, they will be automatically included in the Editor's realm. However, if you need to run some custom initialization logic or if you need to parameterize a certain behavior, the plugin format is the way to go. A common reason for a plugin might be the customization of the Markdown import/export behavior. The code below is an annotated version of the Headings plugin with some parts removed for brevity. You can browse the source of the editor and its plugins for more examples.
 
 ```tsx
-const myPlugin = realmPlugin<{myParam: string}>({
-  init(realm, {myParam}) {
-    realm.pub(addImportVisitor$, myImportVisitor)
-  },
-  update(realm, {myParam}) {
-    // if necessary, you can update the realm with an updated value of myParam
-  }
+//... imports
+import { LexicalHeadingVisitor } from './LexicalHeadingVisitor'
+import { MdastHeadingVisitor } from './MdastHeadingVisitor'
+
+// A gurx cell that contains list of all heading levels that can be used in the editor.
+export const allowedHeadingLevels$ = Cell<ReadonlyArray<HEADING_LEVEL>>(ALL_HEADING_LEVELS, (r) => {
+  // Creates a subscription for the root editor for the purpose of makin ctrl+alt+(1|2|3) convert the current selection into a heading.
+  // the createRootEditorSubscription$ is a signal exposed by the core plugin.
+  r.pub(createRootEditorSubscription$, (theRootEditor) => {
+    return theRootEditor.registerCommand<KeyboardEvent>(
+      KEY_DOWN_COMMAND,
+      (event) => {
+        // omitted for brevity - see the lexical docs for more info on editor commands.
+      },
+      COMMAND_PRIORITY_LOW
+    )
+  })
 })
 
-// ...
-<MDXEditor
-  markdown='Hello world'
-  plugins={[myPlugin({myParam: 'myValue'})]}
-/>
+// The actual plugin.
+// The generic type parameter is used to specify the params accepted by the resulting function.
+// Those params are passed to the init/update functions.
+export const headingsPlugin = realmPlugin<{
+  /**
+   * Allows you to limit the headings used in the editor. Affects the block type dropdown and the keyboard shortcuts.
+   * @default [1, 2, 3, 4, 5, 6]
+   */
+  allowedHeadingLevels?: ReadonlyArray<HEADING_LEVEL>
+}>({
+  init(realm) {
+    // In here, we publish the necessary import/export visitors (omitted here, check the full source in github) into their respective signals.
+    // That's how the editor knows how to convert the MDAST Heading nodes into lexical nodes and vice versa.
+    // We're also registering the necessary Lexical node (HeadingNode) for the Lexical editor instance.
+    realm.pubIn({
+      [addActivePlugin$]: 'headings',
+      [addImportVisitor$]: MdastHeadingVisitor,
+      [addLexicalNode$]: HeadingNode,
+      [addExportVisitor$]: LexicalHeadingVisitor
+    })
+  },
+  update(realm, params) {
+    // The update function is called with each re-render.
+    // re-publishing into the allowedHeadingLevels$ cell means that you can change the allowed heading levels at any time (not just when the component mounts).
+    //
+    realm.pub(allowedHeadingLevels$, params?.allowedHeadingLevels ?? ALL_HEADING_LEVELS)
+  }
+})
 ```
 
 ## Markdown / Editor state conversion
