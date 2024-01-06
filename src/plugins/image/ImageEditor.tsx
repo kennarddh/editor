@@ -1,6 +1,6 @@
 import React from 'react'
 
-import type { BaseSelection, GridSelection, LexicalEditor, NodeSelection, RangeSelection } from 'lexical'
+import type { BaseSelection, LexicalEditor } from 'lexical'
 
 import { useLexicalComposerContext } from '@lexical/react/LexicalComposerContext.js'
 import { useLexicalNodeSelection } from '@lexical/react/useLexicalNodeSelection.js'
